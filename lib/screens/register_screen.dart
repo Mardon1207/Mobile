@@ -9,13 +9,15 @@ class RegisterScreen extends StatefulWidget {
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProviderStateMixin {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+  final TextEditingController _phoneController = TextEditingController();
+
   String? _selectedRegion;
   String? _selectedDistrict;
   String? _selectedUserType;
@@ -24,13 +26,58 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> _regions = ['Toshkent', 'Samarqand', 'Buxoro', 'Andijon', 'Farg‘ona'];
+  final List<String> _regions = [
+    'Toshkent',
+    'Samarqand',
+    'Buxoro',
+    'Andijon',
+    'Farg‘ona',
+    'Namangan',
+    'Qashqadaryo',
+    'Surxondaryo',
+    'Jizzax',
+    'Navoiy',
+    'Xorazm',
+    'Qoraqalpog‘iston',
+  ];
+
   final Map<String, List<String>> _districts = {
-    'Toshkent': ['Chilonzor', 'Yunusobod', 'Mirzo Ulug‘bek'],
-    'Samarqand': ['Jomboy', 'Urgut', 'Pastdarg‘om'],
-    'Buxoro': ['Vobkent', 'G‘ijduvon', 'Shofirkon'],
-    'Andijon': ['Asaka', 'Marhamat', 'Xonobod'],
-    'Farg‘ona': ['Oltiariq', 'Quva', 'Qo‘qon'],
+    'Toshkent': [
+      'Chilonzor',
+      'Yunusobod',
+      'Mirzo Ulug‘bek',
+      'Bektemir',
+      'Sergeli',
+    ],
+    'Samarqand': ['Jomboy', 'Urgut', 'Pastdarg‘om', 'Oqdaryo', 'Ishtixon'],
+    'Buxoro': ['Vobkent', 'G‘ijduvon', 'Shofirkon', 'Kogon', 'Romitan'],
+    'Andijon': [
+      'Asaka',
+      'Marhamat',
+      'Xonobod',
+      'Andijon shahri',
+      'Qo‘rg‘ontepa',
+    ],
+    'Farg‘ona': ['Oltiariq', 'Quva', 'Qo‘qon', 'Marg‘ilon', 'Farg‘ona shahri'],
+    'Namangan': ['Chortoq', 'Pop', 'To‘raqo‘rg‘on', 'Namangan shahri', 'Uychi'],
+    'Qashqadaryo': ['Qarshi', 'Shahrisabz', 'Kitob', 'Koson', 'G‘uzor'],
+    'Surxondaryo': ['Termiz', 'Sherobod', 'Denov', 'Boysun', 'Jarqo‘rg‘on'],
+    'Jizzax': ['Jizzax shahri', 'Zomin', 'Do‘stlik', 'Paxtakor', 'G‘allaorol'],
+    'Navoiy': [
+      'Navoiy shahri',
+      'Zarafshon',
+      'Qiziltepa',
+      'Konimex',
+      'Uchquduq',
+    ],
+    'Xorazm': ['Urganch', 'Xiva', 'Shovot', 'Hazorasp', 'Yangibozor'],
+    'Qoraqalpog‘iston': [
+      'Nukus',
+      'Chimboy',
+      'Qo‘ng‘irot',
+      'Mo‘ynoq',
+      'Taxiatosh',
+    ],
   };
 
   final List<String> _userTypes = ['renter', 'owner'];
@@ -50,7 +97,9 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);
@@ -62,6 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     if (_usernameController.text.isEmpty ||
         _passwordController.text.isEmpty ||
         _emailController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
         _selectedUserType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Iltimos, barcha maydonlarni to‘ldiring!")),
@@ -81,8 +131,9 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
       _passwordController.text,
       _selectedRegion ?? "",
       _selectedDistrict ?? "",
-      _selectedUserType ?? "renter",  // ✅ To‘g‘rilandi
+      _selectedUserType ?? "renter",
       _profileImage,
+      _phoneController.text,
     );
 
     setState(() {
@@ -95,9 +146,9 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Ro‘yxatdan o‘tishda xatolik!")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Ro‘yxatdan o‘tishda xatolik!")));
     }
   }
 
@@ -122,22 +173,55 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.blue.shade100,
-                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                  child: _profileImage == null ? Icon(Icons.camera_alt, size: 40, color: Colors.blue) : null,
+                  backgroundImage:
+                      _profileImage != null ? FileImage(_profileImage!) : null,
+                  child:
+                      _profileImage == null
+                          ? Icon(Icons.camera_alt, size: 40, color: Colors.blue)
+                          : null,
                 ),
               ),
               SizedBox(height: 15),
               _buildTextField(_firstNameController, "Ism", Icons.person),
-              _buildTextField(_lastNameController, "Familiya", Icons.person_outline),
-              _buildTextField(_emailController, "Email", Icons.email, keyboardType: TextInputType.emailAddress),
-              _buildTextField(_usernameController, "Foydalanuvchi nomi", Icons.account_circle),
-              _buildTextField(_passwordController, "Parol", Icons.lock, obscureText: true),
-              
-              _buildDropdown("Foydalanuvchi turi", _userTypes, _selectedUserType, (value) {
-                setState(() {
-                  _selectedUserType = value;
-                });
-              }),
+              _buildTextField(
+                _lastNameController,
+                "Familiya",
+                Icons.person_outline,
+              ),
+              _buildTextField(
+                _emailController,
+                "Email",
+                Icons.email,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              _buildTextField(
+                _usernameController,
+                "Foydalanuvchi nomi",
+                Icons.account_circle,
+              ),
+              _buildTextField(
+                _passwordController,
+                "Parol",
+                Icons.lock,
+                obscureText: true,
+              ),
+              _buildTextField(
+                _phoneController,
+                "Telefon raqami",
+                Icons.phone,
+                keyboardType: TextInputType.phone,
+              ),
+
+              _buildDropdown(
+                "Foydalanuvchi turi",
+                _userTypes,
+                _selectedUserType,
+                (value) {
+                  setState(() {
+                    _selectedUserType = value;
+                  });
+                },
+              ),
 
               _buildDropdown("Viloyat", _regions, _selectedRegion, (value) {
                 setState(() {
@@ -147,24 +231,37 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
               }),
 
               if (_selectedRegion != null)
-                _buildDropdown("Tuman", _districts[_selectedRegion] ?? [], _selectedDistrict, (value) {
-                  setState(() {
-                    _selectedDistrict = value;
-                  });
-                }),
+                _buildDropdown(
+                  "Tuman",
+                  _districts[_selectedRegion] ?? [],
+                  _selectedDistrict,
+                  (value) {
+                    setState(() {
+                      _selectedDistrict = value;
+                    });
+                  },
+                ),
 
               SizedBox(height: 20),
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    onPressed: _register,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 50,
+                        vertical: 15,
                       ),
-                      child: Text("Ro‘yxatdan o‘tish", style: TextStyle(fontSize: 18, color: Colors.white)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
+                    child: Text(
+                      "Ro‘yxatdan o‘tish",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
             ],
           ),
         ),
@@ -172,7 +269,13 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool obscureText = false, TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
@@ -190,7 +293,12 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, String? selectedValue, Function(String?) onChanged) {
+  Widget _buildDropdown(
+    String label,
+    List<String> items,
+    String? selectedValue,
+    Function(String?) onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: DropdownButtonFormField<String>(
@@ -202,7 +310,10 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
           fillColor: Colors.white,
         ),
         value: selectedValue,
-        items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
+        items:
+            items
+                .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+                .toList(),
         onChanged: onChanged,
       ),
     );

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:rentapp/screens/api_service.dart';
 import 'package:rentapp/screens/home_screen.dart';
 import 'package:rentapp/screens/register_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   @override
